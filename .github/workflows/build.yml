@@ -146,6 +146,9 @@ jobs:
       SF_HOST: ${{ secrets.SF_HOST }}
       SF_USERNAME: ${{ secrets.SF_USERNAME }}
       SF_PASSWORD: ${{ secrets.SF_PASSWORD }}
+      TELEGRAM_BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
+      CHAT_ID: ${{ secrets.CHAT_ID }}
+      DEVICE_CODE: ${{ inputs.CODENAME }}
 
     steps:
       - name: Checkout code
@@ -172,6 +175,17 @@ jobs:
         with:
           name: error-log
           path: /home/sketu/rising/out/error.log
+
+      - name: Notify Telegram
+        if: failure()
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
+          CHAT_ID: ${{ secrets.CHAT_ID }}
+          ERROR_LOG_PATH: /home/sketu/rising/out/error.log
+          DEVICE_CODE: ${{ inputs.CODENAME }}  # Pass the device code to the script
+        run: |
+          chmod +x ./notify_telegram.sh
+          ./notify_telegram.sh
 
       - name: Upload Build JSON
         if: success()
