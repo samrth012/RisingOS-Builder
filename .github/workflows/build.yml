@@ -75,6 +75,11 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: Notify Build Start
+        run: |
+          chmod +x path/to/your/notify_start.sh
+          ./notify_start.sh "Build started for device $DEVICE_CODE"
+
       - name: Init and Sync
         run: bash resync.sh
 
@@ -90,6 +95,12 @@ jobs:
       - name: Build RisingOS
         run: bash build.sh
             
+      - name: Notify Build Completion
+        if: success()  # This condition checks if the previous steps succeeded
+        run: |
+          chmod +x path/to/your/notify_completion.sh
+          ./notify_completion.sh "Build completed successfully for device $DEVICE_CODE"
+
       - name: Upload Error Log
         if: failure()
         uses: actions/upload-artifact@v4
